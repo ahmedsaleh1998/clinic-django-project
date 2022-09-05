@@ -1,0 +1,119 @@
+{%extends 'base.html'%}
+{% load bootstrap5 %}
+{% block body %}
+<div class="job_details_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="job_details_header">
+                    <div class="single_jobs white-bg d-flex justify-content-between">
+                        <div class="jobs_left d-flex align-items-center">
+                            <div class="thumb" style="background-image: url({{profile.profile_picture.url}});background-size: cover;background-repeat: no-repeat;background-position: center;">
+                               
+                            </div>
+                            <div class="jobs_conetent">
+                                 <a href="#"><h4>{{user.username}}</h4></a>
+                                <div class="links_locat d-flex align-items-center">
+                                    <div class="location">
+                                        <p> <i class="fa fa-envelope"></i> {{user.email}}</p>
+                                    </div>
+                                    <div class="location">
+                                        <p> <i class="fa fa-phone"></i> {{profile.phone}}</p>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                        {% comment %} <div class="jobs_right">
+                             <div class="apply_now">
+                                <a class="heart_mark" href="#"> <i class="ti-heart"></i> </a>
+                            </div> 
+
+                        </div>  {% endcomment %}
+                    </div>
+                </div>
+                 <div class="descript_wrap white-bg">
+                     {% comment %} <div class="single_wrap">
+                        <h4>add new appointment</h4>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {% bootstrap_form form %}
+                              <input type="submit" class="btn btn-default btn-lg boxed-btn3 w-100" value="add new appointment">
+                        </form>
+                    </div>  {% endcomment %}
+                    
+
+                </div> 
+
+                 <div class="apply_job_form white-bg">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                          <h5 class="card-title">appointment</h5>
+                          <h6 class="card-subtitle mb-2 text-muted">{{appointment.user.username}}</h6>
+                          <p class="card-text">{{appointment.date}}</p>
+                          <p class="card-text">{{appointment.time}}</p>
+                          <p class="card-text">{{appointment.state}}</p>
+                          <a href="{% url 'users:appointment_cancel' appointment.id %}" class="card-link">cancel</a>
+                          <a href="{% url 'users:appointment_update' appointment.id %}" class="card-link">reschedule</a>
+                        </div>
+                      </div>
+
+                </div> 
+            </div>
+            <div class="col-lg-4">
+                <div class="job_sumary">
+                    <div class="job_content">
+                        <ul>
+                            <li>username : <span>{{user.username}}</span></li>
+                            {% if request.user.is_staff == False %}
+                            <li>first name: <span>{{user.first_name}}</span></li>
+                            <li>last name: <span> {{user.last_name}}</span></li>
+                            <li>phone: <span>{{profile.phone}}</span></li>
+                            {%endif%}
+                            <li>email: <span>{{user.email}}</span></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="share_wrap d-flex">
+                    <span>Share at:</span>
+                    <ul>
+                        <li><a href="#"> <i class="fa fa-facebook"></i></a> </li>
+                        <li><a href="#"> <i class="fa fa-google-plus"></i></a> </li>
+                        <li><a href="#"> <i class="fa fa-twitter"></i></a> </li>
+                        <li><a href="#"> <i class="fa fa-envelope"></i></a> </li>
+                    </ul>
+                </div>
+                <div class="job_location_wrap">
+                    <div class="job_lok_inner">
+                        <div id="map" style="height: 200px;"></div>
+                        <script>
+                          function initMap() {
+                            var uluru = {lat: -25.363, lng: 131.044};
+                            var grayStyles = [
+                              {
+                                featureType: "all",
+                                stylers: [
+                                  { saturation: -90 },
+                                  { lightness: 50 }
+                                ]
+                              },
+                              {elementType: 'labels.text.fill', stylers: [{color: '#ccdee9'}]}
+                            ];
+                            var map = new google.maps.Map(document.getElementById('map'), {
+                              center: {lat: -31.197, lng: 150.744},
+                              zoom: 9,
+                              styles: grayStyles,
+                              scrollwheel:  false
+                            });
+                          }
+                          
+                        </script>
+                       
+                        
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

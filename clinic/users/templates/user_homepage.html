@@ -1,0 +1,295 @@
+{%extends 'base.html'%}
+{% load bootstrap5 %}
+{% block body %}
+<div class="job_details_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="job_details_header">
+                    <div class="single_jobs white-bg d-flex justify-content-between">
+                        <div class="jobs_left d-flex align-items-center">
+                            <div class="thumb" style="background-image: url({{profile.profile_picture.url}});background-size: cover;background-repeat: no-repeat;background-position: center;">
+                               
+                            </div>
+                            <div class="jobs_conetent">
+                                 <a href="#"><h4>{{user.username}}</h4></a>
+                                <div class="links_locat d-flex align-items-center">
+                                    <div class="location">
+                                        <p> <i class="fa fa-envelope"></i> {{user.email}}</p>
+                                    </div>
+                                    <div class="location">
+                                        <p> <i class="fa fa-phone"></i> {{profile.phone}}</p>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                        {% comment %} <div class="jobs_right">
+                             <div class="apply_now">
+                                <a class="heart_mark" href="#"> <i class="ti-heart"></i> </a>
+                            </div> 
+
+                        </div>  {% endcomment %}
+                    </div>
+                </div>
+                {% if request.user.is_staff == True %}
+                <div class="descript_wrap white-bg">
+                  <div class="single_wrap">
+                     <h4>appointments filters</h4>
+                <form method="GET">
+                  {% bootstrap_form myfilter.form %}
+                  <input type="submit" value="Search" class="boxed-btn3 w-100 mt-2">
+              </form>
+            </div> 
+                    
+          </div> 
+                {%endif%}
+
+
+                {% if request.user.is_staff == False %}
+                 <div class="descript_wrap white-bg">
+                     <div class="single_wrap">
+                        <h4>add new appointment</h4>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {% bootstrap_form form %}
+                              <input type="submit" class="btn btn-default btn-lg boxed-btn3 w-100" value="add new appointment">
+                        </form>
+                    </div> 
+                    
+                </div> 
+                {%endif%}
+                <div class="apply_job_form white-bg">
+                  <p>reschedule or in processing</p>
+                    <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th scope="col">id</th>
+                            {% if request.user.is_staff %}
+                            <th scope="col"> username </th>
+                            {% endif %}
+                            <th scope="col">date</th>
+                            <th scope="col">time</th>
+                            <th scope="col">state</th>
+                            <th scope="col">action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {%for appoint in appointments%}
+                        {%if appoint.state == 'in processing' or appoint.state == 'reschedule'%}
+                          <tr>
+                            <th scope="row">{{appoint.id}}</th>
+                            {% if request.user.is_staff %}
+                            <th>{{appoint.user.username}}</th>
+                            {% endif %}
+                            <td>{{appoint.date}}</td>
+                            <td>{{appoint.time}}</td>
+                            <td>{{appoint.state}}</td>
+                            {% if request.user.is_staff == False%}
+                            <td> <a class="btn btn-outline-dark btn-sm"href="{% url 'users:appointment_details' appoint.id %}">View</a></td>
+                            {% endif%}
+                            {%if appoint.state == "in processing" and request.user.is_staff or appoint.state == "reschedule" and request.user.is_staff %}
+                            <td> <a class="btn btn-outline-dark btn-sm"href="{% url 'users:appointment_approved' appoint.id %}">approved</a></td>
+                            <td> <a class="btn btn-outline-dark btn-sm"href="{% url 'users:appointment_canceld_by_admin' appoint.id %}">cancel</a></td>
+                           
+                          {%endif%}
+                          </tr>
+                          {%endif%}
+                          {%endfor%}
+                          
+                        </tbody>
+                      </table>
+                   
+                </div>
+
+
+
+
+
+
+
+
+                <div class="apply_job_form white-bg">
+                  <p>canceld by user</p>
+                  <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th scope="col">id</th>
+                          {% if request.user.is_staff %}
+                          <th scope="col"> username </th>
+                          {% endif %}
+                          <th scope="col">date</th>
+                          <th scope="col">time</th>
+                          <th scope="col">state</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {%for appoint in appointments%}
+                      {%if appoint.state == 'canceld'%}
+                        <tr>
+                          <th scope="row">{{appoint.id}}</th>
+                          {% if request.user.is_staff %}
+                          <th>{{appoint.user.username}}</th>
+                          {% endif %}
+                          <td>{{appoint.date}}</td>
+                          <td>{{appoint.time}}</td>
+                          <td>{{appoint.state}}</td>
+                        </tr>
+                        {%endif%}
+                        {%endfor%}
+                      </tbody>
+                    </table>
+                 
+              </div>
+
+
+
+
+
+              <div class="apply_job_form white-bg">
+                <p>canceld by doctor , missed and finished</p>
+                <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">id</th>
+                        {% if request.user.is_staff %}
+                        <th scope="col"> username </th>
+                        {% endif %}
+                        <th scope="col">date</th>
+                        <th scope="col">time</th>
+                        <th scope="col">state</th>
+                        
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {%for appoint in appointments%}
+                    {%if appoint.state == 'canceld by doctor' or appoint.state == 'missed' or appoint.state == 'finished' %}
+                      <tr>
+                        <th scope="row">{{appoint.id}}</th>
+                        {% if request.user.is_staff %}
+                        <th>{{appoint.user.username}}</th>
+                        {% endif %}
+                        <td>{{appoint.date}}</td>
+                        <td>{{appoint.time}}</td>
+                        <td>{{appoint.state}}</td>
+                      
+                      </tr>
+                      {%endif%}
+                      {%endfor%}
+                      
+                    </tbody>
+                  </table>
+               
+            </div>
+
+
+
+
+            <div class="apply_job_form white-bg">
+              <p>approved</p>
+              <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">id</th>
+                      {% if request.user.is_staff %}
+                      <th scope="col"> username </th>
+                      {% endif %}
+                      <th scope="col">date</th>
+                      <th scope="col">time</th>
+                      <th scope="col">state</th>
+                      {% if request.user.is_staff == False%}
+                      <th scope="col">action</th>
+                      {%endif%}
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {%for appoint in appointments%}
+                  {%if appoint.state == 'approved' %}
+                    <tr>
+                      <th scope="row">{{appoint.id}}</th>
+                      {% if request.user.is_staff %}
+                      <th>{{appoint.user.username}}</th>
+                      {% endif %}
+                      <td>{{appoint.date}}</td>
+                      <td>{{appoint.time}}</td>
+                      <td>{{appoint.state}}</td>
+                      {% if request.user.is_staff == False%}
+                      <td> <a class="btn btn-outline-dark btn-sm"href="{% url 'users:appointment_details' appoint.id %}">View</a></td>
+                      {% endif%}
+                    </tr>
+                    {%endif%}
+                    {%endfor%}
+                    
+                  </tbody>
+                </table>
+             
+          </div>
+
+            </div>
+            <div class="col-lg-4">
+                <div class="job_sumary">
+                    {% comment %} <div class="summery_header">
+                        <h3>Job Summery</h3>
+                    </div> {% endcomment %}
+                    <div class="job_content">
+                        <ul>
+                            <li>username : <span>{{user.username}}</span></li>
+                            {% if request.user.is_staff == False %}
+                            <li>first name: <span>{{user.first_name}}</span></li>
+                            <li>last name: <span> {{user.last_name}}</span></li>
+                            <li>phone: <span>{{profile.phone}}</span></li>
+                            {% endif %}
+                            <li>email: <span>{{user.email}}</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="share_wrap d-flex">
+                    <span>Share at:</span>
+                    <ul>
+                        <li><a href="#"> <i class="fa fa-facebook"></i></a> </li>
+                        <li><a href="#"> <i class="fa fa-google-plus"></i></a> </li>
+                        <li><a href="#"> <i class="fa fa-twitter"></i></a> </li>
+                        <li><a href="#"> <i class="fa fa-envelope"></i></a> </li>
+                    </ul>
+                </div>
+                <div class="job_location_wrap">
+                    <div class="job_lok_inner">
+                        <div id="map" style="height: 200px;"></div>
+                        <script>
+                          function initMap() {
+                            var uluru = {lat: -25.363, lng: 131.044};
+                            var grayStyles = [
+                              {
+                                featureType: "all",
+                                stylers: [
+                                  { saturation: -90 },
+                                  { lightness: 50 }
+                                ]
+                              },
+                              {elementType: 'labels.text.fill', stylers: [{color: '#ccdee9'}]}
+                            ];
+                            var map = new google.maps.Map(document.getElementById('map'), {
+                              center: {lat: -31.197, lng: 150.744},
+                              zoom: 9,
+                              styles: grayStyles,
+                              scrollwheel:  false
+                            });
+                          }
+                          
+                        </script>
+                       
+                        
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
